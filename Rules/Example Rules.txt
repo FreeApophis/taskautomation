@@ -1,0 +1,76 @@
+#***** Rule: Automatically closed after 30 days *****
+    rule = Rules.new("Automatically close resolved issues after 30 days", ["Task", " Bug", "Feature", "Support"], ["Resolved"], 30)
+    rule.set_next_state("Closed")
+    result << rule
+
+#***** Rule: Due day reached *****
+    rule = Rules.new("Due date reached, new due date set to 2 days in the future. Please handle this ticket immediatly", "*", $
+    rule.set_checker(method(:due_date_reached))
+    rule.change_attribute(:due_date, (Date.today + 2).to_s)
+    result << rule
+
+#***** Rule: Automatically closed after 30 days *****
+    rule =  Rules.new("Automatically close after 30 days", ["Task", " Bug / Feature"], ["Done", "Won't Do"], 30)
+    rule.set_next_state("Closed")
+
+    result << rule
+
+#***** Rule: Automatically changed from new state after 3 days *****
+    rule =  Rules.new("Automatically changed from new state after 3 days", ["Task", " Bug / Feature"], "New", 3)
+    rule.set_next_state("Needs Work")
+
+    result << rule
+
+#***** Rule: Enforce Author for State Needs Feedback, Done and Won't Do *****
+    rule =  Rules.new("Automaticaclly enforce assigned-to to the author of the ticket", "*", ["Done", "Won't Do", "Needs Feedback"], 0)
+    rule.set_checker(method(:is_not_author))
+    rule.set_action(method(:set_to_author))
+
+    result << rule
+
+#***** Rule: Enforce Due date for Low Priority *****
+    rule =  Rules.new("Automatically enforce due date for Low Priority after 60 days in the future", "*", "*", 0)
+    rule.set_condition(:due_date, nil)
+    rule.set_condition(:priority_id, IssuePriority.find_by_name("Low").id)
+    rule.change_attribute(:due_date, (Date.today + 60).to_s)
+
+    result << rule
+
+#***** Rule: Enforce Due date for Normal Priority *****
+    rule =  Rules.new("Automatically enforce due date for Normal Priority to 30 days in the future", "*", "*", 0)
+    rule.set_condition(:due_date, nil)
+    rule.set_condition(:priority_id, IssuePriority.find_by_name("Normal").id)
+    rule.change_attribute(:due_date, (Date.today + 30).to_s)
+
+    result << rule
+
+#***** Rule: Enforce Due date for High Priority *****
+    rule =  Rules.new("Automatically enforce due date for High Priority to 15 days in the future", "*", "*", 0)
+    rule.set_condition(:due_date, nil)
+    rule.set_condition(:priority_id, IssuePriority.find_by_name("High").id)
+    rule.change_attribute(:due_date, (Date.today + 15).to_s)
+
+    result << rule
+
+#***** Rule: Enforce Due date for Urgent Priority *****
+    rule =  Rules.new("Automatically enforce due date for Urgent Priority to 3 days in the future", "*", "*", 0)
+    rule.set_condition(:due_date, nil)
+    rule.set_condition(:priority_id, IssuePriority.find_by_name("Urgent").id)
+    rule.change_attribute(:due_date, (Date.today + 3).to_s)
+
+    result << rule
+
+#***** Rule: Enforce Due date for High Priority *****
+    rule =  Rules.new("Automatically enforce due date for Immediate Priority to 1 day in the future", "*", "*", 0)
+    rule.set_condition(:due_date, nil)
+    rule.set_condition(:priority_id, IssuePriority.find_by_name("Immediate").id)
+    rule.change_attribute(:due_date, (Date.today + 1).to_s)
+
+    result << rule
+
+#***** Rule: Due day reached *****
+    rule =  Rules.new("Due date reached, automatically increased by 2 days. Please handle this ticket immedialty", "*", "Needs Work", 0)
+    rule.set_checker(method(:due_date_reached))
+    rule.change_attribute(:due_date, (Date.today + 2).to_s)
+
+    result << rule
